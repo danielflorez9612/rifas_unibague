@@ -1,10 +1,9 @@
 const participantController = require('./controllers').participants;
 
 module.exports = (app) => {
-    app.get('/api', (req, res) => res.status(200).send({
-        message: 'Welcome to the Participants API!',
-    }));
-
+    app.post('/api/config', participantController.configPadding);
     app.get('/api/participants', participantController.list);
     app.post('/api/participants', participantController.create);
+    app.post('/api/winner', participantController.registerWinner);
+    app.get('/api/availableNumbers', participantController.listAvailableNumbers);
 };

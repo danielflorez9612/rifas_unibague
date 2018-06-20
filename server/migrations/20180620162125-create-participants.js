@@ -13,6 +13,19 @@ module.exports = {
             unique: true,
             field: 'generated_number'
         },
+        fullName: {
+            type: Sequelize.STRING,
+            allowNull: false,
+            field: 'full_name'
+        },
+        email: {
+            type: Sequelize.STRING,
+            allowNull: false,
+        },
+        phone: {
+            type: Sequelize.STRING,
+            allowNull: false,
+        },
         createdAt: {
           allowNull: false,
           type: Sequelize.DATE
