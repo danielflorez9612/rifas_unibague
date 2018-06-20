@@ -7,13 +7,14 @@ const app = express();
 
 // Log requests to the console.
 app.use(logger('dev'));
-
+app.set('view engine', 'hbs');
+app.set('views', __dirname + '/src/views');
 // Parse incoming requests data (https://github.com/expressjs/body-parser)
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 
 // Setup a default catch-all route that sends back a welcome message in JSON format.
-require('./server/routes')(app);
+require('./src/routes')(app);
 app.get('*', (req, res) => res.status(200).send({
   message: 'Welcome to the beginning of nothingness.',
 }));
