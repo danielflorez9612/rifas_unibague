@@ -7,16 +7,19 @@ Number.prototype.pad = function(size) {
 };
 module.exports = {
     create(req, res) {
+        if(req.body.generatedNumber>=Math.pow(10, digitNumber)) {
+            return res.status(400).send({'generatedNumber':'Invalid generated number'});
+        }
         return Participants
             .create({
                 document: req.body.document,
-                generatedNumber: req.body.generatedNumber,
+                generatedNumber: Number(req.body.generatedNumber).pad(digitNumber),
                 fullName: req.body.fullName,
                 email: req.body.email,
                 phone: req.body.phone
             })
             .then(participant => res.status(201).send(participant))
-            .catch(error => res.status(400).send(error));
+            .catch(error => res.status(400).send({[error.errors[0].path]:error.errors[0].message}));
     },
     list(req, res) {
         return Participants

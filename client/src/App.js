@@ -81,6 +81,7 @@ class App extends Component {
                     },
                     generatedNumber: {
                         value:'',
+                        numeric:true,
                         validators:[Validators.required]
                     },
                     email:{
@@ -106,20 +107,23 @@ class App extends Component {
         ValidatorUtils.verifyCompletion(form);
         this.setState({ form });
     }
-    handleSubmit() {
-        const {controls} = this.state.form;
-
-        function getValuesOf(controls) {
-            const newObject = {};
-            const controlKeys = Object.keys(controls);
-            for(const controlKey of controlKeys) {
+    static getValuesOf({controls}) {
+        const newObject = {};
+        const controlKeys = Object.keys(controls);
+        for(const controlKey of controlKeys) {
+            if(controls[controlKey].numeric) {
+                newObject[controlKey]  = Number(controls[controlKey].value);
+            } else {
                 newObject[controlKey]  = controls[controlKey].value;
             }
-            return newObject;
         }
-
-        const json = getValuesOf(controls);
-        console.log(json);
+        return newObject;
+    }
+    handleSubmit() {
+        const json = App.getValuesOf(this.state.form);
+        axios.post('/api/participants',json)
+            .then(res => console.log('ok',res.data))
+            .catch(error => console.log('error',error));
     }
 
   render() {
