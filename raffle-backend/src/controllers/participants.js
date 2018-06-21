@@ -5,10 +5,14 @@ Number.prototype.pad = function(size) {
     while (s.length < (size || 2)) {s = "0" + s;}
     return s;
 };
+const ERRORS = {
+  'not_unique':'Este dato ya existe!',
+    'not_valid_number':'Este número no es válido'
+};
 module.exports = {
     create(req, res) {
         if(req.body.generatedNumber>=Math.pow(10, digitNumber)) {
-            return res.status(400).send({'generatedNumber':'Invalid generated number'});
+            return res.status(400).send({'generatedNumber':ERRORS['not_valid_number']});
         }
         return Participants
             .create({
@@ -19,7 +23,11 @@ module.exports = {
                 phone: req.body.phone
             })
             .then(participant => res.status(201).send(participant))
-            .catch(error => res.status(400).send({[error.errors[0].path]:error.errors[0].message}));
+            .catch(error => {
+                const errorKey = error.errors[0].validatorKey;
+                return res.status(400).send({[error.errors[0].path]:ERRORS[errorKey]})
+            });
+            // .catch(error => res.status(400).send(error));
     },
     list(req, res) {
         return Participants
