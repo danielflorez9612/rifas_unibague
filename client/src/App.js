@@ -133,7 +133,7 @@ class App extends Component {
                 <AppBar position="static" color="primary">
                     <Toolbar>
                         <Typography variant="title" color="inherit">
-                            Rifa Asograduados
+                            Sorteo Asograduados
                         </Typography>
                     </Toolbar>
                 </AppBar>
