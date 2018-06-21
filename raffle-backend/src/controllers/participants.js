@@ -1,3 +1,4 @@
+const EmailController = require('./EmailController');
 const Participants = require('../models/index').Participants;
 let digitNumber = 3;
 Number.prototype.pad = function(size) {
@@ -22,7 +23,10 @@ module.exports = {
                 email: req.body.email,
                 phone: req.body.phone
             })
-            .then(participant => res.status(201).send(participant))
+            .then(participant => {
+                EmailController.notify(participant);
+                return res.status(201).send(participant);
+            })
             .catch(error => {
                 const errorKey = error.errors[0].validatorKey;
                 return res.status(400).send({[error.errors[0].path]:ERRORS[errorKey]})
