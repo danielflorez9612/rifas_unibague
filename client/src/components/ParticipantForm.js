@@ -9,6 +9,12 @@ import TextField from '@material-ui/core/es/TextField/TextField';
 import CardMedia from '@material-ui/core/es/CardMedia/CardMedia';
 import axios from 'axios'
 import Typography from '@material-ui/core/es/Typography/Typography';
+import FormControl from '@material-ui/core/es/FormControl/FormControl';
+import InputLabel from '@material-ui/core/es/InputLabel/InputLabel';
+import Select from '@material-ui/core/es/Select/Select';
+import Input from '@material-ui/core/es/Input/Input';
+import MenuItem from '@material-ui/core/es/MenuItem/MenuItem';
+import FormHelperText from '@material-ui/core/es/FormHelperText/FormHelperText';
 
 const styles = {
     root: {
@@ -46,6 +52,7 @@ class ParticipantForm extends Component {
     constructor(props) {
         super(props);
         this.state = {
+            availableNumbers:[],
             form: {
                 isComplete:false,
                 hasErrors: false,
@@ -77,6 +84,10 @@ class ParticipantForm extends Component {
         this.handleInputChange = this.handleInputChange.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
     }
+    componentDidMount() {
+        axios.get('/api/availableNumbers')
+            .then(response => this.setState({availableNumbers:response.data}));
+    }
     handleInputChange(event) {
         const target = event.target;
         const {form} = this.state;
@@ -94,7 +105,7 @@ class ParticipantForm extends Component {
                 form.controls[key].errors = [data[key]];
             }
         });
-        this.setState({form});
+        this.setState({ form });
         ValidatorUtils.updateErrors(form);
     }
     handleSubmit() {
@@ -102,6 +113,9 @@ class ParticipantForm extends Component {
         axios.post('/api/participants',json)
             .then(res => this.props.onSubmit(res))
             .catch(error => this.handleError(error));
+    }
+    hasAvailableNumbers(){
+        return this.state.availableNumbers.length>0;
     }
     render() {
         const { classes } = this.props;
@@ -158,25 +172,30 @@ class ParticipantForm extends Component {
                             id="email"
                             label="Email (Te notificaremos de los resultados, prometemos no enviarte spam)"
                             name="email"
-                            value={form.controls['email'].value}
-                            onChange={this.handleInputChange}
+                            value={ form.controls['email'].value }
+                            onChange={ this.handleInputChange }
                             margin="normal"
                             fullWidth={true}
                             error ={form.controls['email'].errors && form.controls['email'].errors.length>0}
                             helperText={form.controls['email'].errors?form.controls['email'].errors[0]:''}
                         />
                         <br/>
-                        <TextField
-                            id="generatedNumber"
-                            label="Number"
-                            name="generatedNumber"
-                            value={form.controls['generatedNumber'].value}
-                            onChange={this.handleInputChange}
-                            margin="normal"
+                        <FormControl
+                            className={classes.formControl}
                             fullWidth={true}
-                            error ={form.controls['generatedNumber'].errors && form.controls['generatedNumber'].errors.length>0}
-                            helperText={form.controls['generatedNumber'].errors?form.controls['generatedNumber'].errors[0]:''}
-                        />
+                            error ={ form.controls['generatedNumber'].errors && form.controls['generatedNumber'].errors.length > 0 }
+                        >
+                            <InputLabel htmlFor="age-helper">{ this.hasAvailableNumbers()? 'Elige un número' : 'Lo sentimos no hay numeros disponibles' }</InputLabel>
+                            <Select
+                                disabled= { !this.hasAvailableNumbers() }
+                                value= { form.controls['generatedNumber'].value }
+                                onChange= { this.handleInputChange }
+                                input= { <Input name="generatedNumber" id="generatedNumber-helper" /> }
+                            >
+                                { this.hasAvailableNumbers()? this.state.availableNumbers.map(number => <MenuItem key={number} value={number}>{number}</MenuItem>):'' }
+                            </Select>
+                            <FormHelperText>{ this.availableNumbersHelper(form) }</FormHelperText>
+                        </FormControl>
                     </form>
                 </CardContent>
                 <CardActions className={classes.actions}>
@@ -188,7 +207,18 @@ class ParticipantForm extends Component {
                         Guardar
                     </Button>
                 </CardActions>
-            </Card>);
+            </Card>
+                );
+    }
+
+    availableNumbersHelper(form) {
+        if(form.controls['generatedNumber'].errors) {
+            return form.controls['generatedNumber'].errors[0]
+        } else if(this.hasAvailableNumbers()) {
+            return '¡Escoge rápido que se acaban!'
+        } else {
+            return '';
+        }
     }
 }
 export default withStyles(styles)(ParticipantForm);
