@@ -14,6 +14,7 @@ import TextField from '@material-ui/core/es/TextField/TextField';
 import CardMedia from '@material-ui/core/es/CardMedia/CardMedia';
 import createMuiTheme from '@material-ui/core/es/styles/createMuiTheme';
 import MuiThemeProvider from '@material-ui/core/es/styles/MuiThemeProvider';
+import {Validators, ValidatorUtils} from './validators';
 const theme = createMuiTheme({
     palette: {
         primary: {
@@ -62,28 +63,46 @@ class App extends Component {
         super(props);
         this.state = {
             form: {
-                document: '',
-                fullName: '',
-                generatedNumber: '',
-                email:'',
-                phone:''
+                hasErrors: false,
+                controls: {
+                    document: {
+                        value:'',
+                        validators:[Validators.required]
+                    },
+                    fullName: {
+                        value:'',
+                        validators:[Validators.required]
+                    },
+                    generatedNumber: {
+                        value:'',
+                        validators:[Validators.required]
+                    },
+                    email:{
+                        value:'',
+                        validators:[Validators.required, Validators.email]
+                    },
+                    phone:{
+                        value:'',
+                        validators:[Validators.required]
+                    }
+
+                }
             }
         };
         this.handleInputChange = this.handleInputChange.bind(this);
     }
     handleInputChange(event) {
         const target = event.target;
-        const value = target.value;
-        const name = target.name;
         const form = this.state.form;
-        form[name] = value;
+        ValidatorUtils.runValidationsOn(form,target);
+        form.controls[target.name].value = target.value;
         this.setState({ form });
     }
 
   render() {
         const { classes } = this.props;
         return (
-            <MuiThemeProvider theme={theme} className={classes.root}>
+            <MuiThemeProvider theme={theme} >
                 <AppBar position="static" color="primary">
                     <Toolbar>
                         <Typography variant="title" color="inherit">
@@ -110,6 +129,8 @@ class App extends Component {
                                 onChange={this.handleInputChange}
                                 margin="normal"
                                 fullWidth={true}
+                                error ={this.state.form.controls['document'].errors && this.state.form.controls['document'].errors.length>0}
+                                helperText={this.state.form.controls['document'].errors?this.state.form.controls['document'].errors[0]:''}
                             />
                             <br/>
                             <TextField
@@ -120,6 +141,8 @@ class App extends Component {
                                 onChange={this.handleInputChange}
                                 margin="normal"
                                 fullWidth={true}
+                                error ={this.state.form.controls['fullName'].errors && this.state.form.controls['fullName'].errors.length>0}
+                                helperText={this.state.form.controls['fullName'].errors?this.state.form.controls['fullName'].errors[0]:''}
                             />
                             <br/>
                             <TextField
@@ -130,6 +153,8 @@ class App extends Component {
                                 onChange={this.handleInputChange}
                                 margin="normal"
                                 fullWidth={true}
+                                error ={this.state.form.controls['phone'].errors && this.state.form.controls['phone'].errors.length>0}
+                                helperText={this.state.form.controls['phone'].errors?this.state.form.controls['phone'].errors[0]:''}
                             />
                             <br/>
                             <TextField
@@ -140,6 +165,8 @@ class App extends Component {
                                 onChange={this.handleInputChange}
                                 margin="normal"
                                 fullWidth={true}
+                                error ={this.state.form.controls['email'].errors && this.state.form.controls['email'].errors.length>0}
+                                helperText={this.state.form.controls['email'].errors?this.state.form.controls['email'].errors[0]:''}
                             />
                             <br/>
                             <TextField
@@ -150,6 +177,8 @@ class App extends Component {
                                 onChange={this.handleInputChange}
                                 margin="normal"
                                 fullWidth={true}
+                                error ={this.state.form.controls['generatedNumber'].errors && this.state.form.controls['generatedNumber'].errors.length>0}
+                                helperText={this.state.form.controls['generatedNumber'].errors?this.state.form.controls['generatedNumber'].errors[0]:''}
                             />
                         </form>
                     </CardContent>
@@ -159,7 +188,7 @@ class App extends Component {
                         </Button>
                     </CardActions>
                 </Card>
-                <pre>{JSON.stringify(this.state)}</pre>
+                <pre>{JSON.stringify(this.state.form)}</pre>
           </MuiThemeProvider>
         );
   }
