@@ -30,5 +30,16 @@ export const ValidatorUtils = {
     runValidationsOn(form, {value, name}) {
         form.controls[name].errors = [].concat.apply([],form.controls[name].validators.map(validator => validator(value)));
         ValidatorUtils.updateErrors(form);
+    },
+    verifyCompletion(form) {
+        let flag = true;
+        const controlKeys = Object.keys(form.controls);
+        for(const controlKey of  controlKeys){
+            if(!form.controls[controlKey].value) {
+                flag = false;
+                break;
+            }
+        }
+        form.isComplete = flag;
     }
-}
+};

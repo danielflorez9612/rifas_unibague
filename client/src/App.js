@@ -39,7 +39,12 @@ const styles = {
         minWidth: 275,
         maxWidth: 1200,
         marginTop:20,
+        marginBottom:20,
         margin: '0 auto'
+    },
+    actions: {
+        display: 'flex',
+        flexDirection: 'row-reverse'
     },
     bullet: {
         display: 'inline-block',
@@ -63,6 +68,7 @@ class App extends Component {
         super(props);
         this.state = {
             form: {
+                isComplete:false,
                 hasErrors: false,
                 controls: {
                     document: {
@@ -94,9 +100,13 @@ class App extends Component {
     handleInputChange(event) {
         const target = event.target;
         const form = this.state.form;
-        ValidatorUtils.runValidationsOn(form,target);
         form.controls[target.name].value = target.value;
+        ValidatorUtils.runValidationsOn(form,target);
+        ValidatorUtils.verifyCompletion(form);
         this.setState({ form });
+    }
+    handleSubmit() {
+        console.log(this.state.form)
     }
 
   render() {
@@ -118,12 +128,12 @@ class App extends Component {
                     />
                     <CardContent>
                         <Typography gutterBottom variant="headline" component="h2" color="primary">
-                            Llena tus datos para ganarte una fabulosa Tablet!
+                            ¡Registrate para ganar una fabulosa Tablet!
                         </Typography>
                         <form>
                             <TextField
                                 id="document"
-                                label="Document"
+                                label="Número de documento"
                                 name="document"
                                 value={this.state.document}
                                 onChange={this.handleInputChange}
@@ -135,7 +145,7 @@ class App extends Component {
                             <br/>
                             <TextField
                                 id="fullName"
-                                label="Full Name"
+                                label="Nombre completo"
                                 name="fullName"
                                 value={this.state.fullName}
                                 onChange={this.handleInputChange}
@@ -147,7 +157,7 @@ class App extends Component {
                             <br/>
                             <TextField
                                 id="phone"
-                                label="Phone"
+                                label="Numero de teléfono de contacto (Para llamarte si te la ganas)"
                                 name="phone"
                                 value={this.state.phone}
                                 onChange={this.handleInputChange}
@@ -159,7 +169,7 @@ class App extends Component {
                             <br/>
                             <TextField
                                 id="email"
-                                label="Email"
+                                label="Email (Te notificaremos de los resultados, prometemos no enviarte spam)"
                                 name="email"
                                 value={this.state.email}
                                 onChange={this.handleInputChange}
@@ -182,13 +192,17 @@ class App extends Component {
                             />
                         </form>
                     </CardContent>
-                    <CardActions>
-                        <Button variant="contained" color="primary" >
+                    <CardActions className={classes.actions}>
+                        <Button variant="contained"
+                                color="primary"
+                                disabled={this.state.form.hasErrors || !this.state.form.isComplete}
+                                fullWidth={true}
+                                onClick={this.handleSubmit}>
                             Guardar
                         </Button>
                     </CardActions>
                 </Card>
-                <pre>{JSON.stringify(this.state.form)}</pre>
+                {/*<pre>{JSON.stringify(this.state.form)}</pre>*/}
           </MuiThemeProvider>
         );
   }
