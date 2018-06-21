@@ -100,7 +100,7 @@ class ParticipantForm extends Component {
     handleSubmit() {
         const json = Forms.getValue(this.state.form);
         axios.post('/api/participants',json)
-            .then(res => console.log('ok',res.data))
+            .then(res => this.props.onSubmit(res))
             .catch(error => this.handleError(error));
     }
     render() {

@@ -1,6 +1,7 @@
 
 import React, { Component } from 'react';
 import ParticipantForm from './ParticipantForm';
+import Confirmation from './Confirmation';
 
 class AppBody extends Component {
     constructor(props) {
@@ -10,12 +11,10 @@ class AppBody extends Component {
         }
     }
     render() {
-        if(this.state.formSubmitted) {
-            return <div>
-                {JSON.stringify(this.props)}
-            </div>
+        if(!this.state.formSubmitted) {
+            return <ParticipantForm onSubmit={response => this.setState({formSubmitted:true, participant: response.data})}/>;
         } else {
-            return <ParticipantForm />
+            return <Confirmation participant={this.state.participant}/>;
         }
     }
 }
