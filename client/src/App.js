@@ -96,6 +96,7 @@ class App extends Component {
             }
         };
         this.handleInputChange = this.handleInputChange.bind(this);
+        this.handleSubmit = this.handleSubmit.bind(this);
     }
     handleInputChange(event) {
         const target = event.target;
@@ -106,7 +107,19 @@ class App extends Component {
         this.setState({ form });
     }
     handleSubmit() {
-        console.log(this.state.form)
+        const {controls} = this.state.form;
+
+        function getValuesOf(controls) {
+            const newObject = {};
+            const controlKeys = Object.keys(controls);
+            for(const controlKey of controlKeys) {
+                newObject[controlKey]  = controls[controlKey].value;
+            }
+            return newObject;
+        }
+
+        const json = getValuesOf(controls);
+        console.log(json);
     }
 
   render() {
