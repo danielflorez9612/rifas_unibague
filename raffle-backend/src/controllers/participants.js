@@ -1,4 +1,4 @@
-const Participants = require('../models').Participants;
+const Participants = require('../models/index').Participants;
 let digitNumber = 3;
 Number.prototype.pad = function(size) {
     let s = String(this);
